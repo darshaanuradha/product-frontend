@@ -69,9 +69,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center">
       <div className="border rounded-lg p-8 w-96">
         <h1 className="text-3xl font-bold mb-6">Login</h1>
-
         {/* USERNAME */}
-
         <div className="mb-4">
           <label className="block mb-2">Username</label>
 
@@ -83,9 +81,7 @@ export default function LoginPage() {
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
-
         {/* PASSWORD */}
-
         <div className="mb-4">
           <label className="block mb-2">Password</label>
 
@@ -97,13 +93,9 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
         {/* ERROR MESSAGE */}
-
         {message && <p className="text-red-500 mb-4">{message}</p>}
-
         {/* LOGIN BUTTON */}
-
         <button
           onClick={login}
           disabled={loading}
@@ -111,6 +103,18 @@ export default function LoginPage() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
+        {/* REGISTER LINK */}{" "}
+        <div className="text-center mt-5">
+          {" "}
+          <span className="text-gray-600"> Don't have an account? </span>{" "}
+          <button
+            onClick={() => router.push("/register")}
+            className="text-blue-500 ml-2 hover:underline"
+          >
+            {" "}
+            Register{" "}
+          </button>{" "}
+        </div>
       </div>
     </main>
   );
