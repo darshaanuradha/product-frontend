@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const links = [
@@ -19,14 +19,32 @@ export default function Navbar() {
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Check JWT token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    setLoggedIn(!!token);
+  }, [pathname]);
+
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("token");
+
+    setLoggedIn(false);
+    setMenuOpen(false);
+
+    router.push("/login");
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-[#e7ded5] bg-[#faf8f5]/95 backdrop-blur">
       <div className="mx-auto max-w-3/4 px-6 lg:px-8">
-
         <div className="flex h-20 items-center justify-between">
-
           {/* BRAND */}
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-15 w-15 items-center justify-center rounded-xl bg-[#795548] text-lg font-bold text-white shadow-sm">
@@ -45,16 +63,35 @@ export default function Navbar() {
           </Link>
 
           {/* DESKTOP NAVIGATION */}
-         <div className="hidden items-center gap-7 lg:flex">
-           {links.map((link) => (
+          <div className="hidden items-center gap-7 lg:flex">
+            {links.map((link) => (
               <NavLink
-                  key={link.href}
-                  href={link.href}
-                  active={pathname === link.href}
-                    >
+                key={link.href}
+                href={link.href}
+                active={pathname === link.href}
+              >
                 {link.label}
               </NavLink>
-              ))}
+            ))}
+
+            {/* AUTH BUTTON */}
+            <div className="ml-2 border-l border-[#e7ded5] pl-6">
+              {loggedIn ? (
+                <button
+                  onClick={logout}
+                  className="rounded-lg bg-[#795548] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5d4037]"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="rounded-lg bg-[#795548] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5d4037]"
+                >
+                  Login
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* MOBILE BUTTON */}
@@ -86,32 +123,49 @@ export default function Navbar() {
               )}
             </svg>
           </button>
-
         </div>
 
         {/* MOBILE NAVIGATION */}
         {menuOpen && (
           <div className="border-t border-[#e7ded5] py-4 lg:hidden">
-         <div className="flex flex-col gap-1">
-            {links.map((link) => (
-              <MobileNavLink
+            <div className="flex flex-col gap-1">
+              {links.map((link) => (
+                <MobileNavLink
                   key={link.href}
                   href={link.href}
                   active={pathname === link.href}
                   onClick={() => setMenuOpen(false)}
                 >
-                {link.label}
-              </MobileNavLink>
-  ))}
-</div>
+                  {link.label}
+                </MobileNavLink>
+              ))}
+
+              {/* MOBILE AUTH BUTTON */}
+              <div className="mt-3 border-t border-[#e7ded5] pt-3">
+                {loggedIn ? (
+                  <button
+                    onClick={logout}
+                    className="w-full rounded-lg bg-[#795548] px-4 py-3 text-left text-sm font-semibold text-white transition hover:bg-[#5d4037]"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full rounded-lg bg-[#795548] px-4 py-3 text-left text-sm font-semibold text-white transition hover:bg-[#5d4037]"
+                  >
+                    Login
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
         )}
-
       </div>
     </nav>
   );
 }
-
 
 /* ================= DESKTOP LINK ================= */
 
@@ -143,7 +197,6 @@ function NavLink({
     </Link>
   );
 }
-
 
 /* ================= MOBILE LINK ================= */
 
